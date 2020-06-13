@@ -3,6 +3,16 @@ type Query {
   todos(searchBy: String = "", filter: TodoFilter = ALL, limit: Int = 10): [Todo!]!
 }
 
+type Mutation {
+  toggleTodo(id: Int!): Todo
+  addTodo(input: TodoInput!): Todo
+}
+
+input TodoInput {
+  content: String!
+  userId: Int!
+}
+
 enum TodoFilter {
   ALL
   DONE
