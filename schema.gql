@@ -1,0 +1,22 @@
+type Query {
+  todo(id: Int!): Todo
+  todos(filter: TodoFilter = ALL, limit: Int = 10): [Todo!]!
+}
+
+enum TodoFilter {
+  ALL
+  DONE
+  TODO
+}
+
+type Todo {
+  id: Int
+  user: User!
+  content: String
+  done: Boolean
+}
+
+type User {
+  id: Int
+  name: String
+}
