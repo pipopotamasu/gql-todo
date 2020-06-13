@@ -36,7 +36,29 @@ function getTodos({ searchBy, filter, limit }) {
   }).slice(0, limit);
 }
 
+function addTodo ({ input }) {
+  const { content, userId } = input;
+  const newTodo = {
+    id: todos.length + 1,
+    content,
+    user: createUser(userId),
+    done: false
+  }
+  todos.push(newTodo)
+  return newTodo;
+}
+
+function toggleTodo ({ id }) {
+  const todo = todos.find((todo) => todo.id === id);
+  todo.done = !todo.done;
+  return todo;
+}
+
 module.exports = {
+  // query
   todo: getTodo,
   todos: getTodos,
+  // mutation
+  addTodo,
+  toggleTodo
 }
