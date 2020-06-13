@@ -22,8 +22,9 @@ function getTodo({ id }) {
   return todos.find(todo => todo.id === id)
 }
 
-function getTodos({ filter, limit }) {
+function getTodos({ searchBy, filter, limit }) {
   return todos.filter((todo) => {
+    if (!todo.content.match(searchBy)) return false;
     switch (filter) {
       case 'ALL':
         return true
