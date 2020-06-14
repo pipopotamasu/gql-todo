@@ -5,12 +5,18 @@ type Query {
 
 type Mutation {
   toggleTodo(id: Int!): Todo
-  addTodo(input: TodoInput!): Todo
+  addTodo(input: TodoCreateInput!): Todo
+  updateTodoContent(input: TodoUpdateInput!): Todo
 }
 
-input TodoInput {
+input TodoCreateInput {
   content: String!
   userId: Int!
+}
+
+input TodoUpdateInput {
+  id: Int!
+  content: String!
 }
 
 enum TodoFilter {

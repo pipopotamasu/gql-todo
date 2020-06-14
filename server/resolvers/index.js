@@ -48,6 +48,13 @@ function addTodo ({ input }) {
   return newTodo;
 }
 
+function updateTodoContent ({ input }) {
+  const { id, content } = input;
+  const i = todos.findIndex(todo => todo.id === id)
+  todos[i].content = content
+  return todos[i]
+}
+
 function toggleTodo ({ id }) {
   const todo = todos.find((todo) => todo.id === id);
   todo.done = !todo.done;
@@ -60,5 +67,6 @@ module.exports = {
   todos: getTodos,
   // mutation
   addTodo,
-  toggleTodo
+  toggleTodo,
+  updateTodoContent
 }
