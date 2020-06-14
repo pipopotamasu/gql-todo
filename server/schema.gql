@@ -7,6 +7,7 @@ type Mutation {
   toggleTodo(id: Int!): Todo
   addTodo(input: TodoCreateInput!): Todo
   updateTodoContent(input: TodoUpdateInput!): Todo
+  deleteTodo(id: Int!): Boolean
 }
 
 input TodoCreateInput {

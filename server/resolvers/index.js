@@ -61,6 +61,11 @@ function toggleTodo ({ id }) {
   return todo;
 }
 
+function deleteTodo ({ id }) {
+  const i = todos.findIndex(todo => todo.id === id);
+  todos.splice(i, 1);
+}
+
 module.exports = {
   // query
   todo: getTodo,
@@ -68,5 +73,6 @@ module.exports = {
   // mutation
   addTodo,
   toggleTodo,
-  updateTodoContent
+  updateTodoContent,
+  deleteTodo
 }
