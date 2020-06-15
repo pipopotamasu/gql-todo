@@ -70,6 +70,7 @@ module.exports = {
   // query
   todo: getTodo,
   todos: getTodos,
+  todoTotalCount: todos.length,
   // mutation
   addTodo,
   toggleTodo,

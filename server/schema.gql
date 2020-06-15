@@ -1,6 +1,7 @@
 type Query {
   todo(id: Int!): Todo
   todos(searchBy: String = "", filter: TodoFilter = ALL, limit: Int = 10): [Todo!]!
+  todoTotalCount: Int!
 }
 
 type Mutation {
