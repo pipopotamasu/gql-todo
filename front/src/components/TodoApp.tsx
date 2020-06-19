@@ -37,7 +37,7 @@ const ADD_TODO = gql`
 
 function TodoApp() {
   const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
-  const [addTodo, { data: hoge }] = useMutation(ADD_TODO);
+  const [addTodo, { data: _data }] = useMutation(ADD_TODO);
   const [newContent, setNewContent] = useState('');
   const onClickAdd = useCallback(async () => {
     const res = await addTodo({ variables: { content: newContent, userId: 1 } });
