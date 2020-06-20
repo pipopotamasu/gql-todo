@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback, ChangeEvent} from 'react';
+import React, { useMemo, useRef, useCallback, ChangeEvent} from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
@@ -35,18 +35,36 @@ const ADD_TODO = gql`
   }
 `;
 
-function TodoApp() {
+const TodoApp: React.FC = () => {
   const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
-  const [addTodo, { data: _data }] = useMutation(ADD_TODO);
-  const [newContent, setNewContent] = useState('');
+  const [addTodo] = useMutation<{ addTodo: Todo }>(
+    ADD_TODO,
+    {
+      update (cache, { data }) {
+        const result = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        if (result && data) {
+          cache.writeQuery({
+            query: FETCH_TODOS,
+            data: { todos: result.todos.concat([data.addTodo]) },
+          });
+        }
+      }
+    }
+  );
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const onClickAdd = useCallback(async () => {
-    const res = await addTodo({ variables: { content: newContent, userId: 1 } });
-    console.log(res)
-    console.log(1)
-  }, [addTodo, newContent]);
-  const onChangeInput = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setNewContent(e.target.value)
-  }, [setNewContent])
+    const input = inputRef.current;
+    if (input && input.value) {
+      try {
+        await addTodo({ variables: { content: input.value, userId: 1 } })
+        input.value = ''
+      } catch (e) {
+        window.alert('error occured')
+      }
+    }
+  }, [addTodo]);
 
   const Items = useMemo(() => {
     if (!data) return <p>no data.</p>;
@@ -65,7 +83,7 @@ function TodoApp() {
   return (
     <>
       <div>
-        <input type="text" value={newContent} onChange={onChangeInput} />
+        <input type="text" ref={inputRef} />
         <button type="button" onClick={onClickAdd}>Add</button>
       </div>
       <ul>
