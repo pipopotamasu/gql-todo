@@ -63,7 +63,8 @@ function toggleTodo ({ id }) {
 
 function deleteTodo ({ id }) {
   const i = todos.findIndex(todo => todo.id === id);
-  todos.splice(i, 1);
+  const deletedTodo = todos.splice(i, 1);
+  return deletedTodo[0]
 }
 
 module.exports = {
