@@ -9,43 +9,45 @@ type Todo = {
   done: boolean
 }
 
+const TODO_FIELDS = gql`
+  fragment todoFields on Todo {
+    id
+    user {
+      id
+    }
+    content
+    done
+  }
+`
+
 const FETCH_TODOS = gql`
   {
     todos {
-      id
-      user {
-        id
-      }
-      content
-      done
+      ...todoFields
     }
   }
+
+  ${TODO_FIELDS}
 `;
 
 const ADD_TODO = gql`
   mutation AddTodo($content: String!, $userId: Int!) {
     addTodo(input: { content: $content, userId: $userId }) {
-      id
-      user {
-        id
-      }
-      content
-      done
+      ...todoFields
     }
   }
+
+  ${TODO_FIELDS}
 `;
 
 const TOGGLE_TODO = gql`
   mutation ToggleTodo($id: Int!) {
     toggleTodo(id: $id) {
-      id
-      user {
-        id
-      }
-      content
-      done
+      ...todoFields
     }
   }
+
+  ${TODO_FIELDS}
 `
 
 export function useTodo () {
@@ -104,7 +106,7 @@ export function useTodo () {
     } catch (e) {
       window.alert('error occured')
     }
-  }, [])
+  }, [toggleTodo])
 
   return {
     data,
