@@ -1,4 +1,4 @@
-import { useRef, useCallback} from 'react';
+import { useRef, useCallback, ChangeEvent} from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
@@ -35,22 +35,53 @@ const ADD_TODO = gql`
   }
 `;
 
+const TOGGLE_TODO = gql`
+  mutation ToggleTodo($id: Int!) {
+    toggleTodo(id: $id) {
+      id
+      user {
+        id
+      }
+      content
+      done
+    }
+  }
+`
+
 export function useTodo () {
   const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
   const [addTodo] = useMutation<{ addTodo: Todo }>(
     ADD_TODO,
     {
       update (cache, { data }) {
-        const result = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
-        if (result && data) {
+        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        if (state && data) {
           cache.writeQuery({
             query: FETCH_TODOS,
-            data: { todos: result.todos.concat([data.addTodo]) },
+            data: { todos: state.todos.concat([data.addTodo]) },
           });
         }
       }
     }
   );
+
+  const [toggleTodo] = useMutation<{ toggleTodo: Todo }>(
+    TOGGLE_TODO,
+    {
+      update(cache, { data }) {
+        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        if (state && data) {
+          const newTodos =  [ ...state.todos ]
+          const index = newTodos.findIndex(todo => todo.id === data.toggleTodo.id);
+          newTodos[index].done = data.toggleTodo.done
+          cache.writeQuery({
+            query: FETCH_TODOS,
+            data: { todos: newTodos },
+          });
+        }
+      }
+    }
+  )
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -66,10 +97,20 @@ export function useTodo () {
     }
   }, [addTodo]);
 
+  const onChangeTick = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const id = parseInt(e.currentTarget.value)
+    try {
+      toggleTodo({ variables: { id } })
+    } catch (e) {
+      window.alert('error occured')
+    }
+  }, [])
+
   return {
     data,
     error,
     inputRef,
-    onClickAdd
+    onClickAdd,
+    onChangeTick
   }
 }
