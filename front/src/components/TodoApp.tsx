@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useTodo } from '../hooks/useTodo';
 
 const TodoApp: React.FC = () => {
-  const { data, error, inputRef, onClickAdd, onChangeTick } = useTodo()
+  const { data, error, inputRef, onClickAdd, onChangeTick, onClickDelete } = useTodo()
 
   const Items = useMemo(() => {
     if (!data) return <p>no data.</p>;
@@ -10,11 +10,12 @@ const TodoApp: React.FC = () => {
       return (
         <li key={item.id}>
           <input type="checkbox" value={item.id} checked={item.done} onChange={onChangeTick} />
-          <span>{ item.content }</span>
+          <span style={{ marginRight: '0.5rem' }}>{ item.content }</span>
+          <span data-id={item.id} onClick={onClickDelete} style={{ cursor: 'pointer' }}>×</span>
         </li>
       )
     })
-  }, [data, onChangeTick])
+  }, [data, onChangeTick, onClickDelete])
 
   if (error) return <p>Error :(</p>;
 

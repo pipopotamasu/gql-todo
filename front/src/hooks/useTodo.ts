@@ -1,4 +1,4 @@
-import { useRef, useCallback, ChangeEvent} from 'react';
+import { useRef, useCallback, ChangeEvent, MouseEvent} from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
@@ -50,6 +50,16 @@ const TOGGLE_TODO = gql`
   ${TODO_FIELDS}
 `
 
+const DELETE_TODO = gql`
+  mutation DeleteTodo($id: Int!) {
+    deleteTodo(id: $id) {
+      ...todoFields
+    }
+  }
+
+  ${TODO_FIELDS}
+`
+
 export function useTodo () {
   const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
   const [addTodo] = useMutation<{ addTodo: Todo }>(
@@ -85,6 +95,24 @@ export function useTodo () {
     }
   )
 
+  const [deleteTodo] = useMutation<{ deleteTodo: Todo }>(
+    DELETE_TODO,
+    {
+      update(cache, { data }) {
+        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        if (state && data) {
+          const newTodos =  [ ...state.todos ]
+          const index = newTodos.findIndex(todo => todo.id === data.deleteTodo.id);
+          newTodos.splice(index, 1)
+          cache.writeQuery({
+            query: FETCH_TODOS,
+            data: { todos: newTodos },
+          });
+        }
+      }
+    }
+  )
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onClickAdd = useCallback(async () => {
@@ -108,11 +136,23 @@ export function useTodo () {
     }
   }, [toggleTodo])
 
+  const onClickDelete = useCallback((e: MouseEvent<HTMLSpanElement>) => {
+    if (window.confirm('Is it ok to delete?')) {
+      try {
+        const id = parseInt((e.target as any).dataset.id)
+        deleteTodo({ variables: { id } })
+      } catch (e) {
+        window.alert('error occured')
+      }
+    }
+  }, [deleteTodo]);
+
   return {
     data,
     error,
     inputRef,
     onClickAdd,
-    onChangeTick
+    onChangeTick,
+    onClickDelete
   }
 }
