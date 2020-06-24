@@ -2,7 +2,7 @@ import { useRef, useCallback, ChangeEvent, MouseEvent} from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 
-type Todo = {
+export type Todo = {
   id: number,
   user: { id: number },
   content: string,
@@ -53,6 +53,16 @@ const TOGGLE_TODO = gql`
 const DELETE_TODO = gql`
   mutation DeleteTodo($id: Int!) {
     deleteTodo(id: $id) {
+      ...todoFields
+    }
+  }
+
+  ${TODO_FIELDS}
+`
+
+const UPDATE_TODO_CONTENT = gql`
+  mutation UpdateTodoContent($id: Int!, $content: String!) {
+    updateTodoContent(input: { id: $id, content: $content }) {
       ...todoFields
     }
   }
@@ -113,6 +123,24 @@ export function useTodo () {
     }
   )
 
+  const [updateTodoContent] = useMutation<{ updateTodoContent: Todo }>(
+    UPDATE_TODO_CONTENT,
+    {
+      update(cache, { data }) {
+        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        if (state && data) {
+          const newTodos =  [ ...state.todos ]
+          const index = newTodos.findIndex(todo => todo.id === data.updateTodoContent.id);
+          newTodos[index].content = data.updateTodoContent.content
+          cache.writeQuery({
+            query: FETCH_TODOS,
+            data: { todos: newTodos },
+          });
+        }
+      }
+    }
+  )
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onClickAdd = useCallback(async () => {
@@ -147,12 +175,21 @@ export function useTodo () {
     }
   }, [deleteTodo]);
 
+  const onClickUpdateContent = useCallback((id: number, content: string) => {
+    try {
+      updateTodoContent({ variables: { id, content } })
+    } catch (e) {
+      window.alert('error occured')
+    }
+  }, [updateTodoContent]);
+
   return {
     data,
     error,
     inputRef,
     onClickAdd,
     onChangeTick,
-    onClickDelete
+    onClickDelete,
+    onClickUpdateContent
   }
 }

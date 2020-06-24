@@ -1,21 +1,32 @@
 import React, { useMemo } from 'react';
+import TodoItem from './TodoItem';
 import { useTodo } from '../hooks/useTodo';
 
 const TodoApp: React.FC = () => {
-  const { data, error, inputRef, onClickAdd, onChangeTick, onClickDelete } = useTodo()
+  const {
+          data,
+          error,
+          inputRef,
+          onClickAdd,
+          onChangeTick,
+          onClickDelete,
+          onClickUpdateContent
+        } = useTodo()
 
   const Items = useMemo(() => {
     if (!data) return <p>no data.</p>;
     return data.todos.map((item) => {
       return (
-        <li key={item.id}>
-          <input type="checkbox" value={item.id} checked={item.done} onChange={onChangeTick} />
-          <span style={{ marginRight: '0.5rem' }}>{ item.content }</span>
-          <span data-id={item.id} onClick={onClickDelete} style={{ cursor: 'pointer' }}>×</span>
-        </li>
+        <TodoItem
+          key={item.id}
+          item={item}
+          onChangeTick={onChangeTick}
+          onClickDelete={onClickDelete}
+          onClickUpdateContent={onClickUpdateContent}
+        />
       )
     })
-  }, [data, onChangeTick, onClickDelete])
+  }, [data, onChangeTick, onClickDelete, onClickUpdateContent])
 
   if (error) return <p>Error :(</p>;
 
