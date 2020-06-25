@@ -1,18 +1,12 @@
-const fs = require('fs');
 const express = require('express');
-const express_graphql = require('express-graphql');
-const { buildSchema } = require('graphql');
-const root = require('./resolvers')
+const { ApolloServer } = require('apollo-server-express');
+const resolvers = require('./resolvers')
+const typeDefs = require('./schema')
 
-// GraphQL schema
-const schema = buildSchema(fs.readFileSync('./schema.gql', 'utf8'));
+const server = new ApolloServer({ typeDefs, resolvers });
 
 // Create an express server and a GraphQL endpoint
 const app = express();
-app.use('/graphql', express_graphql({
- schema: schema,
- rootValue: root,
- graphiql: true
-}));
+server.applyMiddleware({ app });
 
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On http://localhost:4000/graphql'));
