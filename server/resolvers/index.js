@@ -18,11 +18,12 @@ const todos = [...Array(5)].map((_, i) => {
   return createTodo(i+1)
 })
 
-function getTodo({ id }) {
+function getTodo(_parent, { id }) {
   return todos.find(todo => todo.id === id)
 }
 
-function getTodos({ searchBy, filter, limit }) {
+function getTodos(_parent, { searchBy, filter, limit }) {
+  console.log(searchBy)
   return todos.filter((todo) => {
     if (!todo.content.match(searchBy)) return false;
     switch (filter) {
@@ -36,7 +37,7 @@ function getTodos({ searchBy, filter, limit }) {
   }).slice(0, limit);
 }
 
-function addTodo ({ input }) {
+function addTodo (_parent, { input }) {
   const { content, userId } = input;
   const newTodo = {
     id: todos.length + 1,
@@ -48,33 +49,36 @@ function addTodo ({ input }) {
   return newTodo;
 }
 
-function updateTodoContent ({ input }) {
+function updateTodoContent (_parent, { input }) {
   const { id, content } = input;
   const i = todos.findIndex(todo => todo.id === id)
   todos[i].content = content
   return todos[i]
 }
 
-function toggleTodo ({ id }) {
+function toggleTodo (_parent, { id }) {
   const todo = todos.find((todo) => todo.id === id);
   todo.done = !todo.done;
   return todo;
 }
 
-function deleteTodo ({ id }) {
+function deleteTodo (_parent, { id }) {
   const i = todos.findIndex(todo => todo.id === id);
   const deletedTodo = todos.splice(i, 1);
   return deletedTodo[0]
 }
 
 module.exports = {
-  // query
-  todo: getTodo,
-  todos: getTodos,
-  todoTotalCount: todos.length,
-  // mutation
-  addTodo,
-  toggleTodo,
-  updateTodoContent,
-  deleteTodo
+  Query: {
+    todo: getTodo,
+    todos: getTodos,
+    todoTotalCount: () => todos.length,
+    hello: () => 'world',
+  },
+  Mutation: {
+    addTodo,
+    toggleTodo,
+    updateTodoContent,
+    deleteTodo
+  }
 }
