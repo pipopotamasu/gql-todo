@@ -72,7 +72,7 @@ const UPDATE_TODO_CONTENT = gql`
 
 export function useTodo () {
   const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
-  const [addTodo] = useMutation<{ addTodo: Todo }>(
+  const [addTodo] = useMutation<{ addTodo: Todo }, { content: string, userId: number }>(
     ADD_TODO,
     {
       update (cache, { data }) {
@@ -87,7 +87,7 @@ export function useTodo () {
     }
   );
 
-  const [toggleTodo] = useMutation<{ toggleTodo: Todo }>(
+  const [toggleTodo] = useMutation<{ toggleTodo: Todo }, { id: number }>(
     TOGGLE_TODO,
     {
       update(cache, { data }) {
@@ -105,7 +105,7 @@ export function useTodo () {
     }
   )
 
-  const [deleteTodo] = useMutation<{ deleteTodo: Todo }>(
+  const [deleteTodo] = useMutation<{ deleteTodo: Todo }, { id: number }>(
     DELETE_TODO,
     {
       update(cache, { data }) {
@@ -123,7 +123,7 @@ export function useTodo () {
     }
   )
 
-  const [updateTodoContent] = useMutation<{ updateTodoContent: Todo }>(
+  const [updateTodoContent] = useMutation<{ updateTodoContent: Todo }, { id: number, content: string }>(
     UPDATE_TODO_CONTENT,
     {
       update(cache, { data }) {
