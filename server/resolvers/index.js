@@ -23,7 +23,6 @@ function getTodo(_parent, { id }) {
 }
 
 function getTodos(_parent, { searchBy, filter, limit }) {
-  console.log(searchBy)
   return todos.filter((todo) => {
     if (!todo.content.match(searchBy)) return false;
     switch (filter) {
