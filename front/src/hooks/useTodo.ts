@@ -95,7 +95,7 @@ export function useTodo () {
         if (state && data) {
           const newTodos =  [ ...state.todos ]
           const index = newTodos.findIndex(todo => todo.id === data.toggleTodo.id);
-          newTodos[index].done = data.toggleTodo.done
+          newTodos[index] = data.toggleTodo
           cache.writeQuery({
             query: FETCH_TODOS,
             data: { todos: newTodos },
@@ -131,7 +131,7 @@ export function useTodo () {
         if (state && data) {
           const newTodos =  [ ...state.todos ]
           const index = newTodos.findIndex(todo => todo.id === data.updateTodoContent.id);
-          newTodos[index].content = data.updateTodoContent.content
+          newTodos[index] = data.updateTodoContent
           cache.writeQuery({
             query: FETCH_TODOS,
             data: { todos: newTodos },
