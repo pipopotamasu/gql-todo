@@ -83,6 +83,17 @@ export function useTodo () {
             data: { todos: state.todos.concat([data.addTodo]) },
           });
         }
+      },
+      onError (error) {
+        const gqlError = error.graphQLErrors[0];
+        switch (gqlError.extensions?.code) {
+          case "GRAPHQL_VALIDATION_FAILED":
+            window.alert('validation error')
+            break;
+          default:
+            window.alert('something error')
+            break;
+        }
       }
     }
   );
@@ -136,6 +147,17 @@ export function useTodo () {
             query: FETCH_TODOS,
             data: { todos: newTodos },
           });
+        }
+      },
+      onError (error) {
+        const gqlError = error.graphQLErrors[0];
+        switch (gqlError.extensions?.code) {
+          case "GRAPHQL_VALIDATION_FAILED":
+            window.alert('validation error')
+            break;
+          default:
+            window.alert('something error')
+            break;
         }
       }
     }

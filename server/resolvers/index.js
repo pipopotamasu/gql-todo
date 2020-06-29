@@ -1,3 +1,5 @@
+const { ValidationError } = require('apollo-server-express')
+
 function createUser (id = 1) {
   return {
     id,
@@ -38,6 +40,9 @@ function getTodos(_parent, { searchBy, filter, limit }) {
 
 function addTodo (_parent, { input }) {
   const { content, userId } = input;
+  if (!content) {
+    throw new ValidationError('no content')
+  }
   const newTodo = {
     id: todos.length + 1,
     content,
@@ -50,6 +55,9 @@ function addTodo (_parent, { input }) {
 
 function updateTodoContent (_parent, { input }) {
   const { id, content } = input;
+  if (!content) {
+    throw new ValidationError('no content')
+  }
   const i = todos.findIndex(todo => todo.id === id)
   todos[i].content = content
   return todos[i]
