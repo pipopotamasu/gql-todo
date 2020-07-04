@@ -31,14 +31,14 @@ module.exports = gql`
   }
 
   type Todo {
-    id: Int
+    id: Int!
     user: User!
-    content: String
-    done: Boolean
+    content: String!
+    done: Boolean!
   }
 
   type User {
-    id: Int
-    name: String
+    id: Int!
+    name: String!
   }
 `;
