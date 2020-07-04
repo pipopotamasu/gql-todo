@@ -1,13 +1,13 @@
 import { useRef, useCallback, ChangeEvent, MouseEvent} from 'react';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import { AddTodo, AddTodoVariables, AddTodo_addTodo } from './__generated__/AddTodo';
+import { ToggleTodo, ToggleTodoVariables } from './__generated__/ToggleTodo';
+import { DeleteTodo, DeleteTodoVariables } from './__generated__/DeleteTodo';
+import { UpdateTodoContent, UpdateTodoContentVariables } from './__generated__/UpdateTodoContent';
+import { FetchTodos } from './__generated__/FetchTodos';
 
-export type Todo = {
-  id: number,
-  user: { id: number },
-  content: string,
-  done: boolean
-}
+export type Todo = AddTodo_addTodo;
 
 const TODO_FIELDS = gql`
   fragment todoFields on Todo {
@@ -21,7 +21,7 @@ const TODO_FIELDS = gql`
 `
 
 const FETCH_TODOS = gql`
-  {
+  query FetchTodos {
     todos {
       ...todoFields
     }
@@ -71,12 +71,12 @@ const UPDATE_TODO_CONTENT = gql`
 `
 
 export function useTodo () {
-  const { error, data } = useQuery<{todos: Todo[]}>(FETCH_TODOS);
-  const [addTodo] = useMutation<{ addTodo: Todo }, { content: string, userId: number }>(
+  const { error, data } = useQuery<FetchTodos>(FETCH_TODOS);
+  const [addTodo] = useMutation<AddTodo, AddTodoVariables>(
     ADD_TODO,
     {
       update (cache, { data }) {
-        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        const state = cache.readQuery<FetchTodos>({ query: FETCH_TODOS });
         if (state && data) {
           cache.writeQuery({
             query: FETCH_TODOS,
@@ -98,11 +98,11 @@ export function useTodo () {
     }
   );
 
-  const [toggleTodo] = useMutation<{ toggleTodo: Todo }, { id: number }>(
+  const [toggleTodo] = useMutation<ToggleTodo, ToggleTodoVariables>(
     TOGGLE_TODO,
     {
       update(cache, { data }) {
-        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        const state = cache.readQuery<FetchTodos>({ query: FETCH_TODOS });
         if (state && data) {
           const newTodos =  [ ...state.todos ]
           const index = newTodos.findIndex(todo => todo.id === data.toggleTodo.id);
@@ -116,11 +116,11 @@ export function useTodo () {
     }
   )
 
-  const [deleteTodo] = useMutation<{ deleteTodo: Todo }, { id: number }>(
+  const [deleteTodo] = useMutation<DeleteTodo, DeleteTodoVariables>(
     DELETE_TODO,
     {
       update(cache, { data }) {
-        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        const state = cache.readQuery<FetchTodos>({ query: FETCH_TODOS });
         if (state && data) {
           const newTodos =  [ ...state.todos ]
           const index = newTodos.findIndex(todo => todo.id === data.deleteTodo.id);
@@ -134,11 +134,11 @@ export function useTodo () {
     }
   )
 
-  const [updateTodoContent] = useMutation<{ updateTodoContent: Todo }, { id: number, content: string }>(
+  const [updateTodoContent] = useMutation<UpdateTodoContent, UpdateTodoContentVariables>(
     UPDATE_TODO_CONTENT,
     {
       update(cache, { data }) {
-        const state = cache.readQuery<{ todos: Todo[] }>({ query: FETCH_TODOS });
+        const state = cache.readQuery<FetchTodos>({ query: FETCH_TODOS });
         if (state && data) {
           const newTodos =  [ ...state.todos ]
           const index = newTodos.findIndex(todo => todo.id === data.updateTodoContent.id);

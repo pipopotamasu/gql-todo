@@ -80,7 +80,6 @@ module.exports = {
     todo: getTodo,
     todos: getTodos,
     todoTotalCount: () => todos.length,
-    hello: () => 'world',
   },
   Mutation: {
     addTodo,
