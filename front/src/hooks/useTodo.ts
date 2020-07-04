@@ -21,7 +21,7 @@ const TODO_FIELDS = gql`
 `
 
 const FETCH_TODOS = gql`
-  {
+  query FetchTodos {
     todos {
       ...todoFields
     }
