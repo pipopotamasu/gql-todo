@@ -30,3 +30,14 @@ Express application with apollo-server.
 Data is not permanented because this application does not use database.
 <br>
 You can use GraphQL Playground in http://localhost:4000/graphql
+
+## Update Schema Types
+`/front` dir type definitions depend on GraphQL schema which is located in `/server`.
+When you update GraphQL schema in `/server`, you should update type definitions for `/front`.
+
+This is how to update.
+```
+$ cd path/to/gql-todo/front
+$ yarn apollo:download
+$ yarn apollo:codegen // Type definitions will be generated or updated!
+```
